@@ -24,6 +24,11 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   function getColors() {
+    const relevantColors = new Set();
+    const slider = document.getElementById("slide-container");
+    var threshHold = 0;
+    const counter = document.getElementById("counter");
+
     ctx.drawImage(image, 0, 0, cWidth, cHeight);
     const imageData = ctx.getImageData(0, 0, cWidth, cHeight, {
       colorSpace: "srgb",
@@ -39,25 +44,37 @@ window.addEventListener("DOMContentLoaded", () => {
       if (a === 0) continue;
       RGB.push([r, g, b]);
     }
+
     function addColor(color) {
       allColors.set(color, (allColors.get(color) || 0) + 1);
     }
+
+    function quantize(n) {
+      return Math.round(n / 16) * 16;
+    }
+
     function rgbToHex(r, g, b) {
       return "#" + (16777216 | b | (g << 8) | (r << 16)).toString(16).slice(1);
     }
-    function f(n) {
-      return parseInt(n, 10);
+
+    function getPixelThreshold(event) {
+      threshHold = event.currentTarget.children[0].value;
+      counter.innerText = `${threshHold}/1000`;
+      updateColors(threshHold);
     }
 
-    RGB.forEach(([r, g, b]) => {
-      addColor(rgbToHex(f(r), f(g), f(b)));
-    });
-    const relevantColors = [];
-    allColors.forEach((value, key) => {
-      if (value > 500) {
-        relevantColors.push(key);
-      }
-    });
+    function updateColors(threshold) {
+      relevantColors.clear();
+      allColors.forEach((value, key) => {
+        let thresholdValue = threshold == 0 ? 500 : threshold;
+        if (value > thresholdValue) {
+          relevantColors.add(key);
+        }
+      });
+      colorPalette.innerHTML = "";
+      fetchColors();
+    }
+
     async function fetchColors() {
       for (const color of relevantColors) {
         const hexWithoutHash = color.replace("#", "");
@@ -65,27 +82,30 @@ window.addEventListener("DOMContentLoaded", () => {
         try {
           const res = await fetch(url);
           const data = await res.json();
+          const container = document.createElement("div");
           const div = document.createElement("div");
           const box = document.createElement("div");
-          box.style.width = "100px";
-          box.style.height = "100px";
-          box.style.backgroundColor = `${color}`;
-          box.style.border = "1px solid black";
-          div.setAttribute("color", color);
-          div.setAttribute("name", data.name.value);
-          div.setAttribute("style", `color=${color}`);
-          div.innerText = data.name.value;
-          div.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
-          div.style.textShadow = "1px 1px 1px black";
+          container.className = "color-item";
+          box.className = "color-box";
+          div.className = "color-names";
+          box.style.backgroundColor = color;
           div.style.color = color;
-          div.append(box);
-          colorPalette.append(div);
+          div.setAttribute("data-color", color);
+          div.setAttribute("data-name", data.name.value);
+          div.innerText = `${data.name.value} - ${color}`;
+          container.append(div);
+          container.append(box);
+          colorPalette.append(container);
           console.log(`Color: ${color}`, data.name.value);
         } catch (err) {
           console.error("Error fetching color:", color, err);
         }
       }
     }
-    fetchColors();
+    RGB.forEach(([r, g, b]) => {
+      addColor(rgbToHex(quantize(r), quantize(g), quantize(b)));
+    });
+    slider.addEventListener("change", getPixelThreshold);
+    updateColors(250);
   }
 });

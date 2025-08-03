@@ -8,10 +8,21 @@
     <title>Get Image Colors</title>
   </head>
   <body>
+    <div class="slidecontainer" id="slide-container">
+      <input
+        type="range"
+        min="500"
+        max="1000"
+        value="500"
+        class="slider"
+        id="myRange"
+      />
+    </div>
+    <div id="counter">500/1000</div>
     <label for="image">Choose a picture to see color palette:</label>
     <input type="file" id="image" name="image" accept="image/png, image/jpeg" />
-    <div>
-      <canvas style="border: 1px solid black" id="canvas"></canvas>
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
       <div id="color-palette"></div>
     </div>
   </body>
