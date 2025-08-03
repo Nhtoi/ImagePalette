@@ -39,7 +39,7 @@ A simple web app that extracts the most prominent colors from an uploaded image 
 .
 ├── index.html        # Main HTML file
 ├── style.css         # Styling for the app
-├── script.js         # Color extraction logic
+├── app.js         # Color extraction logic
 ├── /images      # Placeholder for screenshots + testing image
 └── README.md         # Documentation
 ```
