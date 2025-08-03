@@ -49,7 +49,7 @@ A simple web app that extracts the most prominent colors from an uploaded image 
 ## ⚙️ How to Run
 1. Clone the repository:
    ```bash
-   git clone https://github.com/nhtoi/image-color-extractor.git
+   git clone https://github.com/nhtoi/ImagePalette.git
    ```
 2. Open `index.html` in your browser.  
 3. Upload an image and adjust the slider to see the extracted colors.
